@@ -28,7 +28,7 @@ jobs:
       push: ${{ github.event_name != 'pull_request' }}
       platforms: linux/amd64,linux/arm64
       context: ./root_v6.30.08
-      file: ./root_v6.30.08/Dockerfile
+      file: Dockerfile
       cache: true
       cache-scope: root-v6-30-08
       meta-images: ${{ vars.DOCKERHUB_USERNAME }}/nuisancemc
