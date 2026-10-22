@@ -7,8 +7,7 @@ ENV GEN_DIR=/opt/generators
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential gfortran cmake git wget \
     libboost-all-dev libclhep-dev \
-    python3 python3-pip \
-    python3-numpy python3-dev \
+    python3 python3-dev python3-venv \
     zlib1g-dev libx11-dev libssl-dev libpng-dev libjpeg-dev \
     liblzma-dev libxxhash-dev libxpm-dev libxft-dev libxext-dev \
     libgsl-dev liblz4-dev libgif-dev libtiff-dev libxml2-dev \
@@ -17,7 +16,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libglew-dev libyaml-cpp-dev \
     nlohmann-json3-dev libzstd-dev \
     libpcre3-dev libfreetype-dev \
-    && update-ca-certificates
+    && update-ca-certificates && \
+    python3 -m venv --system-site-packages /opt/venv && \
+    /opt/venv/bin/pip install --no-cache-dir \
+        numpy h5py matplotlib uproot awkward && \
+    rm -rf /var/lib/apt/lists/*
+
+## Use the venv for python throughout
+ENV PATH=/opt/venv/bin:${PATH}
 
 # Build dir
 WORKDIR ${GEN_DIR}
@@ -43,7 +49,7 @@ RUN sed -i "s/int /extern int /g" pythia6_common_address.c && \
     ./makePythia6.linuxx8664
 
 ENV PYTHIA6=${GEN_DIR}/pythia6
-ENV LD_LIBRARY_PATH=${PYTHIA6}:${LD_LIBRARY_PATH}
+ENV LD_LIBRARY_PATH=${PYTHIA6}
 
 # Get and build ROOT
 RUN git clone -b v6-30-08 --depth 1 --single-branch https://github.com/root-project/root.git /tmp/root-src && \
@@ -60,7 +66,7 @@ RUN git clone -b v6-30-08 --depth 1 --single-branch https://github.com/root-proj
           -Ddataframe=ON -Dimt=OFF -Dtmva=OFF -Dvdt=OFF \
           -Dtmva-cpu=OFF -Dtmva-pymva=OFF -Dssl=OFF -Dcudnn=OFF \
 	  -Deve=OFF -Dx11=ON -Dopengl=OFF \
-          -DPYTHON_EXECUTABLE=/usr/bin/python3 \
+          -DPYTHON_EXECUTABLE=/opt/venv/bin/python \
 	  -Druntime_cxxmodules=OFF \
 	  -Dbuiltin_afterimage=ON \
 	  -Dfail-on-missing=ON \
@@ -72,3 +78,4 @@ RUN git clone -b v6-30-08 --depth 1 --single-branch https://github.com/root-proj
 ENV ROOTSYS=${GEN_DIR}/root
 ENV PATH=${ROOTSYS}/bin:${PATH}
 ENV LD_LIBRARY_PATH=${ROOTSYS}/lib:${LD_LIBRARY_PATH}
+ENV PYTHONPATH=${ROOTSYS}/lib
