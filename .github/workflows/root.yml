@@ -1,4 +1,4 @@
-name: Build and publish ROOT 6.30.08
+name: Build and publish a container with ROOT 6.30.08 and libraries needed for other generator builds
 
 on:
   push:
@@ -6,11 +6,11 @@ on:
       - main
     paths:
       - 'root_v6.30.08/**'
-      - '.github/workflows/docker.yml'
+      - '.github/workflows/root.yml'
   pull_request:
     paths:
       - 'root_v6.30.08/**'
-      - '.github/workflows/docker.yml'
+      - '.github/workflows/root.yml'
   workflow_dispatch:
 
 permissions:
