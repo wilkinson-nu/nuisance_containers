@@ -1,0 +1,42 @@
+name: Build and publish a container with NuWro 25.03.01 and NUISANCE
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'genie_v3.6.2/**'
+      - '.github/workflows/genie.yml'
+  pull_request:
+    paths:
+      - 'genie_v3.6.2/**'
+      - '.github/workflows/genie.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    uses: docker/github-builder/.github/workflows/build.yml@v1
+    permissions:
+      contents: read
+      id-token: write
+
+    with:
+      output: image
+      push: ${{ github.event_name != 'pull_request' }}
+      platforms: linux/amd64,linux/arm64
+      context: ./genie_v3.6.2
+      file: Dockerfile
+      cache: true
+      cache-scope: nuwro-v25-03-01
+      meta-images: ${{ vars.DOCKERHUB_USERNAME }}/nuisancemc
+      meta-tags: |
+        type=raw,value=genie_v3.6.2
+
+    secrets:
+      registry-auths: |
+        - registry: docker.io
+          username: ${{ vars.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
