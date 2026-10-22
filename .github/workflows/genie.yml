@@ -1,4 +1,4 @@
-name: Build and publish a container with NuWro 25.03.01 and NUISANCE
+name: Build and publish a container with GENIE 3.6.2, GENIERW 1.4.2 and NUISANCE
 
 on:
   push:
