@@ -1,15 +1,36 @@
- with:
+name: Build and publish ROOT 6.30.08
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'root_v6.30.08/**'
+      - '.github/workflows/docker.yml'
+  pull_request:
+    paths:
+      - 'root_v6.30.08/**'
+      - '.github/workflows/docker.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    uses: docker/github-builder/.github/workflows/build.yml@v1
+    permissions:
+      contents: read
+      id-token: write
+
+    with:
       output: image
       push: ${{ github.event_name != 'pull_request' }}
-
       platforms: linux/amd64,linux/arm64
-
       context: ./root_v6.30.08
       file: ./root_v6.30.08/Dockerfile
-
       cache: true
       cache-scope: root-v6-30-08
-
       meta-images: ${{ vars.DOCKERHUB_USERNAME }}/nuisancemc
       meta-tags: |
         type=raw,value=root_v6.30.08
