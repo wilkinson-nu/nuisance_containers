@@ -1,0 +1,42 @@
+name: Build and publish a container with GiBUU 2025p5 and NUISANCE
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'gibuu_v2025p5/**'
+      - '.github/workflows/gibuu.yml'
+  pull_request:
+    paths:
+      - 'gibuu_v2025p5/**'
+      - '.github/workflows/gibuu.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    uses: docker/github-builder/.github/workflows/build.yml@v1
+    permissions:
+      contents: read
+      id-token: write
+
+    with:
+      output: image
+      push: ${{ github.event_name != 'pull_request' }}
+      platforms: linux/amd64,linux/arm64
+      context: ./gibuu_v2025p5
+      file: Dockerfile
+      cache: true
+      cache-scope: gibuu-v2025p5
+      meta-images: ${{ vars.DOCKERHUB_USERNAME }}/nuisancemc
+      meta-tags: |
+        type=raw,value=gibuu_v2025p5
+
+    secrets:
+      registry-auths: |
+        - registry: docker.io
+          username: ${{ vars.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
