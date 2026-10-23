@@ -48,7 +48,7 @@ ENV PATH=$GENIE/bin:${PATH}
 ENV LD_LIBRARY_PATH=$GENIE/lib:$LD_LIBRARY_PATH
 
 ## Use a custom Messenger to quieten things down:
-COPY Messenger.xml ${GENIE}/config/Messenger.xml
+COPY Messenger.xml ${GENIE}/config/.
 
 ## Get the GENIERW code
 ENV GENIERW_VERSION=R-1_04_02
@@ -56,6 +56,8 @@ ENV GENIE_REWEIGHT=${GEN_DIR}/GENIERW/${GENIERW_VERSION}
 RUN git clone -b ${GENIERW_VERSION} --depth 1 --single-branch https://github.com/GENIE-MC/Reweight.git ${GENIE_REWEIGHT} && \
     cd ${GENIE_REWEIGHT} && \
     make -j${NCORES} && make install
+
+ENV LD_LIBRARY_PATH=${GENIE_REWEIGHT}/lib:$LD_LIBRARY_PATH
 
 ## Get and build NUISANCE (using a fixed commit for reproducibility)
 WORKDIR ${GEN_DIR}
