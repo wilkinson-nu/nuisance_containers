@@ -1,0 +1,42 @@
+name: Build and publish a container with all generator builds and NUISANCE
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'tutorial/**'
+      - '.github/workflows/tutorial.yml'
+  pull_request:
+    paths:
+      - 'tutorial/**'
+      - '.github/workflows/tutorial.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    uses: docker/github-builder/.github/workflows/build.yml@v1
+    permissions:
+      contents: read
+      id-token: write
+
+    with:
+      output: image
+      push: ${{ github.event_name != 'pull_request' }}
+      platforms: linux/amd64,linux/arm64
+      context: ./tutorial
+      file: Dockerfile
+      cache: true
+      cache-scope: tutorial
+      meta-images: ${{ vars.DOCKERHUB_USERNAME }}/nuisancemc
+      meta-tags: |
+        type=raw,value=tutorial
+
+    secrets:
+      registry-auths: |
+        - registry: docker.io
+          username: ${{ vars.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
