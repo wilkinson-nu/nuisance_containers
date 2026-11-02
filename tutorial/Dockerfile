@@ -2,7 +2,7 @@
 FROM wilkinsonnu/nuisancemc:genie_v3.6.2 AS genie
 FROM wilkinsonnu/nuisancemc:gibuu_v2025p5 AS gibuu
 FROM wilkinsonnu/nuisancemc:neut_v5.9.2 AS neut
-FROM wilkinsonnu/nuisancemc:nuwro_v25.03.01 AS nuwro
+FROM wilkinsonnu/nuisancemc:nuwro_v25.11.01 AS nuwro
 
 ## Final image base
 FROM wilkinsonnu/nuisancemc:root_v6.30.08
