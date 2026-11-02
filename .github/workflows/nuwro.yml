@@ -1,15 +1,15 @@
-name: Build and publish a container with NuWro 25.03.01 and NUISANCE
+name: Build and publish a container with NuWro 25.11.01 and NUISANCE
 
 on:
   push:
     branches:
       - main
     paths:
-      - 'nuwro_v25.03.01/**'
+      - 'nuwro_v25.11.01/**'
       - '.github/workflows/nuwro.yml'
   pull_request:
     paths:
-      - 'nuwro_v25.03.01/**'
+      - 'nuwro_v25.11.01/**'
       - '.github/workflows/nuwro.yml'
   workflow_dispatch:
 
@@ -27,13 +27,13 @@ jobs:
       output: image
       push: ${{ github.event_name != 'pull_request' }}
       platforms: linux/amd64,linux/arm64
-      context: ./nuwro_v25.03.01
+      context: ./nuwro_v25.11.01
       file: Dockerfile
       cache: true
-      cache-scope: nuwro-v25-03-01
+      cache-scope: nuwro-v25-11-01
       meta-images: ${{ vars.DOCKERHUB_USERNAME }}/nuisancemc
       meta-tags: |
-        type=raw,value=nuwro_v25.03.01
+        type=raw,value=nuwro_v25.11.01
 
     secrets:
       registry-auths: |
