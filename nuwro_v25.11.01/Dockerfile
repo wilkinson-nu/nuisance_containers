@@ -14,7 +14,7 @@ RUN ln -s ${GEN_DIR}/pythia6/libPythia6.so ${ROOTSYS}/lib/libPythia6.so
 
 ## Get NuWro (using a slightly modified version to avoid a compilation error... a PR has been submitted...)
 WORKDIR ${GEN_DIR}
-RUN git clone --depth 1 --branch remove-vla https://github.com/wilkinson-nu/nuwro nuwro && \
+RUN git clone --depth 1 --branch NuWro_25_11_1_vlafix https://github.com/wilkinson-nu/nuwro nuwro && \
     cd nuwro && make -j${NCORES}
 
 ENV NUWRO=${GEN_DIR}/nuwro
