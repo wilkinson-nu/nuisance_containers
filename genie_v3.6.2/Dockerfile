@@ -36,13 +36,14 @@ WORKDIR ${GEN_DIR}/GENIE
 RUN git clone -b ${GENIE_VERSION} --depth 1 --single-branch https://github.com/GENIE-MC/Generator.git ${GENIE} && \    
     cd ${GENIE} && \
     sed -i 's/g77/gfortran/g' src/make/Make.include && \
-    ./configure --enable-debug \
-    		--enable-fnal \
+    ./configure --enable-fnal \
     		--enable-rwght \
     		--enable-lhapdf6 \
 		--disable-lhapdf5 \
     		--disable-apfel && \
-    make -j${NCORES} && make install
+    make -j${NCORES} && make install && \
+    rm -rf ${GENIE}/.git && \
+    find ${GENIE} -name '*.o' -delete
     
 ENV PATH=$GENIE/bin:${PATH}
 ENV LD_LIBRARY_PATH=$GENIE/lib:$LD_LIBRARY_PATH
@@ -50,12 +51,18 @@ ENV LD_LIBRARY_PATH=$GENIE/lib:$LD_LIBRARY_PATH
 ## Use a custom Messenger to quieten things down:
 COPY Messenger.xml ${GENIE}/config/.
 
+## Shut a NUISANCE warning up
+RUN rm ${GENIE}/config/Messenger_laconic.xml && \
+    ln -s ${GENIE}/config/Messenger.xml ${GENIE}/config/Messenger_laconic.xml 
+
 ## Get the GENIERW code
 ENV GENIERW_VERSION=R-1_04_02
 ENV GENIE_REWEIGHT=${GEN_DIR}/GENIERW/${GENIERW_VERSION}
 RUN git clone -b ${GENIERW_VERSION} --depth 1 --single-branch https://github.com/GENIE-MC/Reweight.git ${GENIE_REWEIGHT} && \
     cd ${GENIE_REWEIGHT} && \
-    make -j${NCORES} && make install
+    make -j${NCORES} && make install && \
+    rm -rf ${GENIE_REWEIGHT}/.git && \
+    find ${GENIE_REWEIGHT} -name '*.o' -delete
 
 ENV LD_LIBRARY_PATH=${GENIE_REWEIGHT}/lib:$LD_LIBRARY_PATH
 
@@ -71,6 +78,7 @@ RUN git clone https://github.com/NUISANCEMC/nuisance.git NUISANCE && \
           -Dnusystematics_ENABLED=0 \
           ../ && \
     make -j${NCORES} && make install
+
 
 ENV NUISANCE=${GEN_DIR}/NUISANCE
 ENV PATH=${NUISANCE}/build/Linux/bin:${PATH}
