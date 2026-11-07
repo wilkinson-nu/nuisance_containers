@@ -37,12 +37,17 @@ ENV NEUT=${GEN_DIR}/neut/build/Linux
 ENV CERN=${GEN_DIR}/CERNLIB
 
 COPY --from=neut ${CERN}/lib ${CERN}/lib
-COPY --from=neut ${NEUT}/bin ${NEUT}/bin
+COPY --from=neut ${NEUT}/bin/neutroot2 ${NEUT}/bin/neutroot2
+COPY --from=neut ${NEUT}/bin/neut-config ${NEUT}/bin/neut-config
 COPY --from=neut ${NEUT}/lib ${NEUT}/lib
 COPY --from=neut ${NEUT}/share ${NEUT}/share
 COPY --from=neut ${NEUT}/include ${NEUT}/include
 COPY --from=neut ${NEUT}/cmake ${NEUT}/cmake
 COPY --from=neut ${NEUT}/NEUT.pc ${NEUT}/NEUT.pc
+
+## Slight hack to avoid runtime warnings
+RUN mkdir -p /opt/generators/neut/src && \
+    ln -s /opt/generators/neut/build/Linux/include /opt/generators/neut/src/neutclass
 
 ENV NEUT_ROOT=${GEN_DIR}/neut
 ENV NEUT=${GEN_DIR}/neut/build/Linux
@@ -93,7 +98,10 @@ RUN git clone https://github.com/NUISANCEMC/nuisance.git NUISANCE && \
           -Dnusystematics_ENABLED=0 \
           ../ && \
     make -j${NCORES} && \
-    make install
+    make install && \
+    rm -rf ${GEN_DIR}/NUISANCE/.git && \
+    find ${GEN_DIR}/NUISANCE/build -name CMakeFiles -type d -prune -exec rm -rf {} + && \
+    find ${GEN_DIR}/NUISANCE/build -name '*.o' -delete
 
 ENV NUISANCE=${GEN_DIR}/NUISANCE
 ENV PATH=${NUISANCE}/build/Linux/bin:${PATH}
