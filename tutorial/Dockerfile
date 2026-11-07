@@ -65,7 +65,7 @@ COPY --from=nuwro ${NUWRO}/data ${NUWRO}/data
 COPY --from=nuwro ${NUWRO}/src ${NUWRO}/src
 
 ENV PATH=${NUWRO}/bin:${PATH}
-ENV ROOT_INCLUDE_PATH=${NUWRO}/src
+ENV ROOT_INCLUDE_PATH=${NEUT}:${NEUT}/include:${NUWRO}/src
 
 ## GiBUU
 ENV GiBUU=${GEN_DIR}/GiBUU
