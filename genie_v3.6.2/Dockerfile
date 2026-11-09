@@ -36,6 +36,7 @@ WORKDIR ${GEN_DIR}/GENIE
 RUN git clone -b ${GENIE_VERSION} --depth 1 --single-branch https://github.com/GENIE-MC/Generator.git ${GENIE} && \    
     cd ${GENIE} && \
     sed -i 's/g77/gfortran/g' src/make/Make.include && \
+    sed -i 's/event->Print();//' src/Physics/Multinucleon/EventGen/MECGenerator.cxx && \
     ./configure --enable-fnal \
     		--enable-rwght \
     		--enable-lhapdf6 \
